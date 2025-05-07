@@ -8,10 +8,13 @@ using Authentication.API.Application.Commands.Users.ResetPassword;
 using Authentication.API.Application.Dtos;
 using Authentication.API.Driven.Ports.Services;
 using Authentication.API.Extensions;
+using Authentication.API.Models;
 using Emovere.Infrastructure.Email;
+using Emovere.Infrastructure.Email.Models;
 using Emovere.SharedKernel.Notifications;
 using Emovere.SharedKernel.Responses;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Authentication.API.Driven.Adapters.Services
 {
@@ -85,24 +88,111 @@ namespace Authentication.API.Driven.Adapters.Services
             return Response<DeleteUserResponse>.Success(default, code: StatusCode.NO_CONTENT_STATUS_CODE);
         }
 
-        public Task<Response<ForgetUserPasswordResponse>> GeneratePasswordResetTokenAsync(ForgetUserPasswordCommand command)
+        public async Task<Response<ForgetUserPasswordResponse>> GeneratePasswordResetTokenAsync(ForgetUserPasswordCommand command)
         {
-            throw new NotImplementedException();
+            var user = await userManager.FindByEmailAsync(command.Email);
+            if (user is null)
+            {
+                notificator.HandleNotification(new(ResponseMessages.USER_NOT_FOUND));
+                return Response<ForgetUserPasswordResponse>.Failure(Notifications, code: StatusCode.NOT_FOUND_STATUS_CODE);
+            }
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+
+            var param = new Dictionary<string, string?>
+            {
+                {"token", token },
+                {"email", command.Email}
+            };
+
+            var callback = QueryHelpers.AddQueryString(command.ClientUrlToResetPassword, param);
+
+            var message = new EmailMessage(command.Email, "Link to reset password.", callback);
+            await emailService.SendAsync(message);
+
+            return Response<ForgetUserPasswordResponse>.Success(default, code: StatusCode.NO_CONTENT_STATUS_CODE);
         }
 
-        public Task<Response<ResetUserPasswordResponse>> ResetPasswordAsync(ResetUserPasswordCommand command)
+        public async Task<Response<ResetUserPasswordResponse>> ResetPasswordAsync(ResetUserPasswordCommand command)
         {
-            throw new NotImplementedException();
+            var user = await userManager.FindByEmailAsync(command.Email);
+            if (user is null)
+            {
+                notificator.HandleNotification(new(ResponseMessages.USER_NOT_FOUND));
+                return Response<ResetUserPasswordResponse>.Failure(Notifications, code: StatusCode.NOT_FOUND_STATUS_CODE);
+            }
+
+            var result = await userManager.ResetPasswordAsync(user, command.Token, command.Password);
+            if (!result.Succeeded)
+            {
+                foreach (var item in result.Errors)
+                {
+                    notificator.HandleNotification(new(item.Description));
+                }
+
+                return Response<ResetUserPasswordResponse>.Failure(Notifications);
+            }
+
+            return Response<ResetUserPasswordResponse>.Success(default, code: StatusCode.NO_CONTENT_STATUS_CODE);
         }
 
-        public Task<Response<AddUserRoleResponse>> AddRoleToUserAsync(AddUserRoleCommand command)
+        public async Task<Response<AddUserRoleResponse>> AddRoleToUserAsync(AddUserRoleCommand command)
         {
-            throw new NotImplementedException();
+            var roleIsValid = await RoleIsValidAsync(command.RoleName);
+            if (!roleIsValid)
+            {
+                notificator.HandleNotification(new(ResponseMessages.INVALID_ROLE_NAME));
+                return Response<AddUserRoleResponse>.Failure(Notifications);
+            }
+
+            var user = await userManager.FindByEmailAsync(command.Email);
+            if (user is null)
+            {
+                notificator.HandleNotification(new(ResponseMessages.USER_NOT_FOUND));
+                return Response<AddUserRoleResponse>.Failure(Notifications, code: StatusCode.NOT_FOUND_STATUS_CODE);
+            }
+
+            var result = await userManager.AddToRoleAsync(user, command.RoleName);
+            if (!result.Succeeded)
+            {
+                foreach (var item in result.Errors)
+                {
+                    notificator.HandleNotification(new(item.Description));
+                }
+                return Response<AddUserRoleResponse>.Failure(Notifications);
+            }
+
+            return Response<AddUserRoleResponse>.Success(default, code: StatusCode.NO_CONTENT_STATUS_CODE);
         }
 
-        public Task<Response<CreateRoleResponse>> CreateRoleAsync(CreateRoleCommand command)
+        public async Task<Response<CreateRoleResponse>> CreateRoleAsync(CreateRoleCommand command)
         {
-            throw new NotImplementedException();
+            if (!RoleIsInEnum(command.RoleName))
+            {
+                notificator.HandleNotification(new(ResponseMessages.INEXISTENT_ROLE));
+                return Response<CreateRoleResponse>.Failure(Notifications);
+            }
+
+            if (await roleManager.RoleExistsAsync(command.RoleName))
+            {
+                notificator.HandleNotification(new($"Role: '{command.RoleName}' already exists."));
+                return Response<CreateRoleResponse>.Failure(Notifications);
+            }
+
+            var role = new IdentityRole(command.RoleName);
+            var result = await roleManager.CreateAsync(role);
+
+            if (!result.Succeeded || role.Name is null)
+            {
+                foreach (var error in result.Errors)
+                {
+                    notificator.HandleNotification(new(error.Description));
+                }
+                return Response<CreateRoleResponse>.Failure(Notifications);
+            }
+
+            var roleResult = new CreateRoleResponse(Guid.Parse(role.Id));
+            return Response<CreateRoleResponse>.Success(roleResult, code: StatusCode.CREATED_STATUS_CODE);
         }
 
         public async Task<Response<UserDto>> FindByUserEmailAsync(string email)
@@ -117,10 +207,29 @@ namespace Authentication.API.Driven.Adapters.Services
             return Response<UserDto>.Success(new(Guid.Parse(user.Id), user.Email ?? string.Empty));
         }
 
-        public Task<Response<IReadOnlyCollection<string>>> FindRolesByUserIdAsync(Guid userId)
+        public async Task<Response<IReadOnlyCollection<string>>> FindRolesByUserIdAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            var user = await userManager.FindByIdAsync(userId.ToString());
+            if (user is null)
+            {
+                notificator.HandleNotification(new(ResponseMessages.USER_NOT_FOUND));
+                return Response<IReadOnlyCollection<string>>.Failure(Notifications, code: StatusCode.NOT_FOUND_STATUS_CODE);
+            }
+
+            return Response<IReadOnlyCollection<string>>.Success([.. await userManager.GetRolesAsync(user)]);
         }
+
+        private async Task<bool> RoleIsValidAsync(string roleName)
+        {
+            var roleIsValid = RoleIsInEnum(roleName);
+
+            var roleExists = await roleManager.RoleExistsAsync(roleName);
+
+            return roleIsValid && roleExists;
+        }
+
+        private static bool RoleIsInEnum(string roleName)
+            => Enum.GetNames<EUserRoles>().Any(name => name.Equals(roleName, StringComparison.OrdinalIgnoreCase));
 
         private List<string> Notifications => [.. notificator.GetNotifications().Select(x => x.Message)];
 

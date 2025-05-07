@@ -2,5 +2,5 @@
 
 namespace Authentication.API.Application.Commands.Users.AddRole
 {
-    public record AddUserRoleCommand() : Command<AddUserRoleResponse>;
+    public record AddUserRoleCommand(string Email, string RoleName) : Command<AddUserRoleResponse>;
 }

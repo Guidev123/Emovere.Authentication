@@ -9,10 +9,14 @@ namespace Authentication.API.Application.Commands.Users.Register
         public RegisterUserValidator()
         {
             RuleFor(x => x.FirstName)
-                      .NotEmpty().WithMessage(ResponseMessages.FIRSTNAME_CANNOT_BE_EMPTY)
-                      .Length(2, 50).WithMessage(ResponseMessages.FIRSTNAME_LENGTH_2_TO_50);
+                .Must(HasOnlyLetters)
+                .WithMessage(ResponseMessages.NAME_MUST_BE_JUST_LETTERS)
+                .NotEmpty().WithMessage(ResponseMessages.FIRSTNAME_CANNOT_BE_EMPTY)
+                .Length(2, 50).WithMessage(ResponseMessages.FIRSTNAME_LENGTH_2_TO_50);
 
             RuleFor(x => x.LastName)
+                .Must(HasOnlyLetters)
+                .WithMessage(ResponseMessages.NAME_MUST_BE_JUST_LETTERS)
                 .NotEmpty().WithMessage(ResponseMessages.LASTNAME_CANNOT_BE_EMPTY)
                 .Length(2, 50).WithMessage(ResponseMessages.LASTNAME_LENGTH_2_TO_50);
 
@@ -44,6 +48,8 @@ namespace Authentication.API.Application.Commands.Users.Register
         }
 
         private static bool HasUpperCase(string password) => password.Any(char.IsUpper);
+
+        private static bool HasOnlyLetters(string input) => new Regex(@"^[a-zA-Z]+$").IsMatch(input);
 
         private static bool DocumentIsValid(string cpf) => IsValidDocument(cpf);
 

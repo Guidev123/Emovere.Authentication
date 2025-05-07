@@ -86,7 +86,7 @@ namespace Authentication.API.Driven.Adapters.Services
             {
                 Issuer = currentIssuer,
                 Subject = identityClaims,
-                Expires = DateTime.UtcNow.AddHours(1),
+                Expires = DateTime.UtcNow.AddHours(_tokenSettings.TokenExpirationInHours),
                 SigningCredentials = key
             });
 

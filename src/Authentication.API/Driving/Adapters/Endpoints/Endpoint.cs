@@ -12,7 +12,12 @@ namespace Authentication.API.Driving.Adapters.Endpoints
             endpoints.MapGroup("api/v1/authentication")
                 .WithTags("Authentication")
                 .MapEndpoint<RegisterEndpoint>()
-                .MapEndpoint<LoginEndpoint>();
+                .MapEndpoint<LoginEndpoint>()
+                .MapEndpoint<DeleteUserEndpoint>()
+                .MapEndpoint<CreateRoleEndpoint>()
+                .MapEndpoint<AddRoleEndpoint>()
+                .MapEndpoint<ResetPasswordEndpoint>()
+                .MapEndpoint<ForgetPasswordEndpoint>();
         }
 
         public static IResult CustomResponse<T>(Response<T> response)

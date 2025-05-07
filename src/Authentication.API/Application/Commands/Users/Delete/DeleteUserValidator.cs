@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Authentication.API.Extensions;
+using FluentValidation;
 
 namespace Authentication.API.Application.Commands.Users.Delete
 {
@@ -6,6 +7,9 @@ namespace Authentication.API.Application.Commands.Users.Delete
     {
         public DeleteUserValidator()
         {
+            RuleFor(c => c.UserId)
+                .NotEqual(Guid.Empty)
+                .WithMessage(ResponseMessages.INVALID_USER_ID);
         }
     }
 }

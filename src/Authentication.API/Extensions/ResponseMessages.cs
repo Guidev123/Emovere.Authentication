@@ -24,5 +24,13 @@
         public const string USER_NOT_FOUND = "User not found.";
         public const string FAILED_TO_DELETE_USER = "Failed to delete user.";
         public const string FAILED_TO_REGISTER_CUSTOMER = "Failed to register customer.";
+        public const string NAME_MUST_BE_JUST_LETTERS = "The First and Last Name must contain only letters.";
+        public const string INVALID_ROLE_NAME = "Invalid Role name.";
+        public const string INEXISTENT_ROLE = "Invalid role name. Must be a valid role from enum UserRoles.";
+        public const string ROLE_NAME_CANNOT_BE_EMPTY = "Role name cannot be empty.";
+        public const string INVALID_USER_ID = "Invalid user id.";
+        public const string CLIENT_URL_TO_RESET_PASSWORD_CANNOT_BE_EMPTY = "Client Url to reset password cannot be empty.";
+        public const string CLIENT_URL_TO_RESET_PASSWORD_INVALID = "Client Url to reset password is invalid.";
+        public const string TOKEN_CANNOT_BE_EMPTY = "Token cannot be empty.";
     }
 }
