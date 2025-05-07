@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+option csharp_namespace = "Customers.Protos";
+
+package customerapi;
+
+service CustomerEndpoint{
+	 rpc CreateCustomerAsync(CreateCustomerRequest) returns(CreateCustomerResponse){}
+}
+
+message CreateCustomerRequest{
+	string user_id = 1;
+	string first_name = 2;
+	string last_name = 3;
+	string email = 4;
+	string document = 5;
+	google.protobuf.Timestamp birth_date = 6;
+}
+
+message CreateCustomerResponse{
+	google.protobuf.StringValue customer_id = 1;
+	bool is_success = 2;
+}

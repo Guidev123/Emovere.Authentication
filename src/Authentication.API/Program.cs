@@ -1,14 +1,21 @@
-var builder = WebApplication.CreateBuilder(args);
+using Authentication.API.Configurations;
 
-builder.Services.AddOpenApi();
+var builder = WebApplication.CreateBuilder(args)
+    .AddUseCases()
+    .AddMessageBusConfiguration()
+    .AddgRPCServices()
+    .AddDbContextConfig()
+    .AddEmailServicesConfiguration()
+    .AddIdentityConfig()
+    .AddSwaggerConfig()
+    .AddSerilog()
+    .AddModelsSettings()
+    .AddApplicationServices()
+    .AddInfrastructureServices()
+    .AddServices();
 
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
-
-app.UseHttpsRedirection();
+var app = builder.Build()
+    .UseApiDefaultSeetings()
+    .UseSerilogSettings();
 
 app.Run();
