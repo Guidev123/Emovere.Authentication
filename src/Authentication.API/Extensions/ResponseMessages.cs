@@ -3,6 +3,7 @@
     public static class ResponseMessages
     {
         public const string INVALID_USER_CREDENTIALS = "Invalid user credentials.";
+        public const string INTERNAL_SERVER_ERROR = "An internal server error has occurred, please contact our support.";
         public const string CAN_NOT_LOGIN_NOW = "You can not login now, try again later.";
         public const string PASSWORD_CAN_NOT_BE_EMPTY = "The password field can not be empty.";
         public const string INVALID_EMAIL_FORMAT = "Invalid email format.";
@@ -32,5 +33,6 @@
         public const string CLIENT_URL_TO_RESET_PASSWORD_CANNOT_BE_EMPTY = "Client Url to reset password cannot be empty.";
         public const string CLIENT_URL_TO_RESET_PASSWORD_INVALID = "Client Url to reset password is invalid.";
         public const string TOKEN_CANNOT_BE_EMPTY = "Token cannot be empty.";
+        public const string FIRST_AND_LAST_NAME_MUST_BE_DIFERENT = "First and Last Name can not be equal.";
     }
 }

@@ -10,6 +10,8 @@ namespace Authentication.API.Application.Commands.Users.Register
         {
             RuleFor(x => x.FirstName)
                 .Must(HasOnlyLetters)
+                .NotEqual(x => x.LastName)
+                .WithMessage(ResponseMessages.FIRST_AND_LAST_NAME_MUST_BE_DIFERENT)
                 .WithMessage(ResponseMessages.NAME_MUST_BE_JUST_LETTERS)
                 .NotEmpty().WithMessage(ResponseMessages.FIRSTNAME_CANNOT_BE_EMPTY)
                 .Length(2, 50).WithMessage(ResponseMessages.FIRSTNAME_LENGTH_2_TO_50);

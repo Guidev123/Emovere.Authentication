@@ -2,6 +2,7 @@ using Authentication.API.Configurations;
 
 var builder = WebApplication.CreateBuilder(args)
     .AddUseCases()
+    .AddCustomMiddlewares()
     .AddMessageBusConfiguration()
     .AddgRPCServices()
     .AddDbContextConfig()

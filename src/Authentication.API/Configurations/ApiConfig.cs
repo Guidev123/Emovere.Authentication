@@ -4,6 +4,7 @@ using Authentication.API.Driven.Ports.Services;
 using Authentication.API.Driving.Adapters.Endpoints;
 using Authentication.API.Driving.Ports.Services;
 using Authentication.API.Extensions;
+using Authentication.API.Middlewares;
 using Emovere.Infrastructure.Bus;
 using Emovere.Infrastructure.Email;
 using Emovere.Infrastructure.EventSourcing;
@@ -90,6 +91,7 @@ namespace Authentication.API.Configurations
             });
 
             builder.Services.AddJwtConfiguration(builder.Configuration);
+            builder.Services.AddAuthorization();
 
             builder.Services.AddJwksManager(x => x.Jws = Algorithm.Create(DigitalSignaturesAlgorithm.EcdsaSha256))
                 .PersistKeysToDatabaseStore<AuthenticationDbContext>()
@@ -101,6 +103,13 @@ namespace Authentication.API.Configurations
         public static WebApplicationBuilder AddModelsSettings(this WebApplicationBuilder builder)
         {
             builder.Services.Configure<AppTokenSettings>(builder.Configuration.GetSection(nameof(AppTokenSettings)));
+
+            return builder;
+        }
+
+        public static WebApplicationBuilder AddCustomMiddlewares(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddTransient<GlobalExceptionMiddleware>();
 
             return builder;
         }
@@ -127,6 +136,8 @@ namespace Authentication.API.Configurations
 
         public static WebApplication UseApiDefaultSeetings(this WebApplication app)
         {
+            app.UseMiddleware<GlobalExceptionMiddleware>();
+
             app.UseSwaggerConfig();
 
             app.UseHttpsRedirection();
