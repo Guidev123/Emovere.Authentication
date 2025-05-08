@@ -9,6 +9,7 @@ namespace Authentication.API.Application.Commands.Users.Delete
 {
     public sealed class DeleteUserHandler(INotificator notificator,
                                           IAspNetIdentityService identityService,
+                                          ILogger<DeleteUserHandler> logger,
                                           IMessageBus bus) : CommandHandler<DeleteUserCommand, DeleteUserResponse>(notificator)
     {
         public override async Task<Response<DeleteUserResponse>> ExecuteAsync(DeleteUserCommand request, CancellationToken cancellationToken)
@@ -19,9 +20,15 @@ namespace Authentication.API.Application.Commands.Users.Delete
             var result = await identityService.DeleteAsync(request).ConfigureAwait(false);
             if (!result.IsSuccess) return result;
 
-            await bus.PublishAsync(new DeletedUserIntegrationEvent(request.UserId), cancellationToken).ConfigureAwait(false);
+            await DeleteCustomerAsync(request.UserId, cancellationToken).ConfigureAwait(false);
 
             return result;
+        }
+
+        private async Task DeleteCustomerAsync(Guid userId, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("Enqueuing Customer with id: {CustomerId} to delete.", userId);
+            await bus.PublishAsync(new DeletedUserIntegrationEvent(userId), cancellationToken).ConfigureAwait(false);
         }
     }
 }
