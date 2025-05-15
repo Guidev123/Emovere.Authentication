@@ -1,16 +1,14 @@
 using Authentication.API.Configurations;
+using Emovere.WebApi.Config;
 
 var builder =
     WebApplication.CreateBuilder(args)
+    .AddSharedConfig()
     .AddUseCases()
-    .AddCustomMiddlewares()
-    .AddMessageBusConfiguration()
     .AddgRPCServices()
     .AddDbContextConfig()
-    .AddEmailServicesConfiguration()
     .AddIdentityConfig()
     .AddSwaggerConfig()
-    .AddSerilog()
     .AddModelsSettings()
     .AddApplicationServices()
     .AddInfrastructureServices()
