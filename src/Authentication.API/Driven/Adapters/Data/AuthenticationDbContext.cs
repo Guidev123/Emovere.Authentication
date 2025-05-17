@@ -1,6 +1,6 @@
 ﻿using Authentication.API.Models;
 using KeyPairJWT.Core.Models;
-using KeyPairJWT.EntityFramework;
+using KeyPairJWT.Store.EntityFramework;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;

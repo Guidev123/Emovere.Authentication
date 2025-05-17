@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Authentication.API.Driven.Adapters.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -62,6 +62,7 @@ namespace Authentication.API.Driven.Adapters.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     KeyId = table.Column<string>(type: "VARCHAR(200)", maxLength: 200, nullable: false),
                     Type = table.Column<string>(type: "VARCHAR(160)", maxLength: 160, nullable: false),
+                    Use = table.Column<string>(type: "VARCHAR(160)", maxLength: 160, nullable: false),
                     Parameters = table.Column<string>(type: "NVARCHAR(3000)", maxLength: 3000, nullable: false),
                     IsRevoked = table.Column<bool>(type: "bit", nullable: false),
                     RevokedReason = table.Column<string>(type: "VARCHAR(160)", maxLength: 160, nullable: true),

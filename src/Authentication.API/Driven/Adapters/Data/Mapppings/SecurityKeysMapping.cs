@@ -12,6 +12,7 @@ public class SecurityKeysMapping : IEntityTypeConfiguration<KeyMaterial>
         builder.HasKey(k => k.Id);
         builder.Property(k => k.KeyId).HasColumnType("VARCHAR").HasMaxLength(200);
         builder.Property(k => k.Type).HasColumnType("VARCHAR").HasMaxLength(160);
+        builder.Property(k => k.Use).HasColumnType("VARCHAR").HasMaxLength(160);
         builder.Property(k => k.Parameters).HasColumnType("NVARCHAR").HasMaxLength(3000);
         builder.Property(k => k.RevokedReason).HasColumnType("VARCHAR").HasMaxLength(160);
     }

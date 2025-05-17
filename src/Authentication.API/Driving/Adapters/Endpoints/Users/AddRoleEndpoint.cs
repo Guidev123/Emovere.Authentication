@@ -6,7 +6,7 @@ namespace Authentication.API.Driving.Adapters.Endpoints.Users
     public sealed class AddRoleEndpoint : IEndpoint
     {
         public static void Map(IEndpointRouteBuilder app)
-            => app.MapPost("/roles/users", HandleAsync);
+            => app.MapPost("/roles/users", HandleAsync).RequireAuthorization();
 
         private static async Task<IResult> HandleAsync(AddUserRoleCommand command, IUserService userService)
             => Endpoint.CustomResponse(await userService.AddRoleAsync(command).ConfigureAwait(false));

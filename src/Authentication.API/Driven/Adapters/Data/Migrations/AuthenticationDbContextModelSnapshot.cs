@@ -77,6 +77,11 @@ namespace Authentication.API.Driven.Adapters.Data.Migrations
                         .HasMaxLength(160)
                         .HasColumnType("VARCHAR");
 
+                    b.Property<string>("Use")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("VARCHAR");
+
                     b.HasKey("Id");
 
                     b.ToTable("SecurityKeys", (string)null);

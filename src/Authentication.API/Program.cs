@@ -15,6 +15,7 @@ var builder =
     .AddServices();
 
 var app = builder.Build()
+    .UseMiddlewares()
     .UseApiDefaultSeetings()
     .UseSerilogSettings();
 

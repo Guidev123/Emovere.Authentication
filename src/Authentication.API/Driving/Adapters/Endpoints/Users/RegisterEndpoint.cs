@@ -1,5 +1,4 @@
 ﻿using Authentication.API.Application.Commands.Users.Register;
-using Authentication.API.Driving.Adapters.Endpoints;
 using Authentication.API.Driving.Ports.Services;
 
 namespace Authentication.API.Driving.Adapters.Endpoints.Users

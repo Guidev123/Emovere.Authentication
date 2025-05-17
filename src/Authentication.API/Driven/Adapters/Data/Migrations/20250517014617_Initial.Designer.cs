@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Authentication.API.Driven.Adapters.Data.Migrations
 {
     [DbContext(typeof(AuthenticationDbContext))]
-    [Migration("20250506235840_initial")]
-    partial class initial
+    [Migration("20250517014617_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,6 +76,11 @@ namespace Authentication.API.Driven.Adapters.Data.Migrations
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("Use")
                         .IsRequired()
                         .HasMaxLength(160)
                         .HasColumnType("VARCHAR");

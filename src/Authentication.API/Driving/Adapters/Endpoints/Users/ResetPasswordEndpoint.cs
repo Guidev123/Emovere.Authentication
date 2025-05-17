@@ -6,7 +6,7 @@ namespace Authentication.API.Driving.Adapters.Endpoints.Users
     public sealed class ResetPasswordEndpoint : IEndpoint
     {
         public static void Map(IEndpointRouteBuilder app)
-            => app.MapPost("/password/reset", HandleAsync);
+            => app.MapPost("/password/reset", HandleAsync).RequireAuthorization();
 
         private static async Task<IResult> HandleAsync(ResetUserPasswordCommand command, IUserService userService)
             => Endpoint.CustomResponse(await userService.ResetPasswordAsync(command).ConfigureAwait(false));
