@@ -60,9 +60,10 @@ namespace Authentication.API.Configurations
                 options.TokenLifespan = TimeSpan.FromHours(2);
             });
 
-            builder.Services.AddJwksManager(x => x.Jws = Algorithm.Create(DigitalSignaturesAlgorithm.EcdsaSha256))
-                .PersistKeysToDatabaseStore<AuthenticationDbContext>()
-                .UseJwtValidation();
+            builder.Services.AddJwksManager(x =>
+            {
+                x.Jws = Algorithm.Create(DigitalSignaturesAlgorithm.EcdsaSha256);
+            }).PersistKeysToDatabaseStore<AuthenticationDbContext>().UseJwtValidation();
 
             return builder;
         }
